@@ -29,7 +29,7 @@ Nothing else to do: Neovim reads `init.lua` on next launch.
 ## Layout
 
 ```
-init.lua    entry point; indentation + clipboard, everything lives here for now
+init.lua    entry point; indentation + clipboard + keymaps, all here for now
 ```
 
 Once `init.lua` outgrows a single file, split into `lua/raymar/` — a namespaced
@@ -54,6 +54,39 @@ roughly 2 in 5 lost when quitting straight after a yank.
 outlives Neovim. After the fix, 5 of 5 test yanks survived. The helper is
 chosen per platform — `pbcopy`, `wl-copy`, `xclip`, or `xsel` — and the hook
 no-ops when none is installed, so the config stays portable.
+
+## Ctrl+Backspace
+
+`Ctrl+Backspace` deletes the word before the cursor in Insert mode, and on the
+`:` command line.
+
+This needs a mapping because a terminal cannot report the *chord*: it sends a
+single byte. Measured on xfce4-terminal (VTE 0.80) here:
+
+| key              | bytes sent            | Neovim reads |
+| ---------------- | --------------------- | ------------ |
+| `Backspace`      | `0x7f`                | `<BS>`       |
+| `Ctrl+Backspace` | `0x08`                | `<C-h>`      |
+| `Ctrl+Delete`    | `\x1b[3;5~`           | `<C-Del>`    |
+
+So Ctrl+Backspace arrives as `<C-h>`, which *already* means "delete one
+character" — hence the key appearing to do nothing special. `init.lua` maps it
+to `<C-w>` instead.
+
+`<C-BS>` is bound alongside `<C-h>`, because terminals speaking the kitty
+keyboard protocol (kitty, foot, Ghostty, WezTerm) and the GUI front-ends report
+the key under that name. The extra binding is inert where it never arrives.
+
+Two details worth knowing:
+
+- The mapping prefixes `<C-g>u`, opening a new undo block, so one `u` restores
+  the deleted word rather than folding it into the surrounding insert.
+- Vim deliberately **stops once** at the point insert started (see `:h i_CTRL-W`
+  with `'backspace'` containing `start`). Deleting back past where you began
+  inserting takes one extra press. This is upstream behaviour, not the mapping.
+
+Plain `Backspace` is untouched, and `<C-h>` keeps its normal-mode meaning — only
+Insert and Command-line mode are remapped.
 
 ## Notes
 

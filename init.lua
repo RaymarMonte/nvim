@@ -78,3 +78,23 @@ vim.api.nvim_create_autocmd("VimLeave", {
         pcall(vim.fn.chanclose, job, "stdin")
     end,
 })
+
+-- ---------------------------------------------------------------------------
+-- Ctrl+Backspace in Insert mode
+-- ---------------------------------------------------------------------------
+-- A terminal cannot report "Ctrl+Backspace" as such; it sends one byte. VTE
+-- terminals (xfce4-terminal, gnome-terminal) send 0x08, which Neovim reads as
+-- <C-h> -- and <C-h> already means "delete one character", which is why the
+-- key seems to do nothing special. Remap it to delete the previous word.
+--
+-- <C-BS> is bound alongside it: terminals speaking the kitty keyboard protocol
+-- (kitty, foot, Ghostty, WezTerm) and the GUI front-ends report the key under
+-- that name instead. The binding is simply inert where it never arrives, so
+-- the config stays portable.
+--
+-- <C-g>u opens a new undo block first, so a single u restores the deleted word
+-- instead of folding it into the surrounding insert.
+for _, lhs in ipairs({ "<C-h>", "<C-BS>" }) do
+    vim.keymap.set("i", lhs, "<C-g>u<C-w>", { desc = "Delete word before cursor" })
+    vim.keymap.set("c", lhs, "<C-w>", { desc = "Delete word before cursor" })
+end
