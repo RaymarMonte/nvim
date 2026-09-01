@@ -29,11 +29,31 @@ Nothing else to do: Neovim reads `init.lua` on next launch.
 ## Layout
 
 ```
-init.lua    entry point; everything lives here for now
+init.lua    entry point; indentation + clipboard, everything lives here for now
 ```
 
 Once `init.lua` outgrows a single file, split into `lua/raymar/` — a namespaced
 subdirectory, so module names can't collide with plugins on the runtime path.
+
+## Indentation
+
+Four spaces, no literal tabs (`expandtab`, `tabstop`/`shiftwidth`/`softtabstop`
+= 4). These are global *defaults*: Neovim's bundled ftplugins still override
+them where a language requires it, which is intentional — Makefiles keep real
+tabs, Go keeps tabs for gofmt. No blanket `FileType` autocmd fights that.
+
+## Clipboard persistence
+
+On X11 the clipboard is a live handoff between processes, not storage: the
+selection belongs to whoever set it and dies with that process. A yank made
+just before `:q` can therefore be gone before you paste it — measured here at
+roughly 2 in 5 lost when quitting straight after a yank.
+
+`init.lua` fixes this by remembering the last clipboard-bound yank
+(`TextYankPost`) and, on `VimLeave`, piping it to a **detached** helper that
+outlives Neovim. After the fix, 5 of 5 test yanks survived. The helper is
+chosen per platform — `pbcopy`, `wl-copy`, `xclip`, or `xsel` — and the hook
+no-ops when none is installed, so the config stays portable.
 
 ## Notes
 
