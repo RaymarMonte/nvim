@@ -98,3 +98,20 @@ for _, lhs in ipairs({ "<C-h>", "<C-BS>" }) do
     vim.keymap.set("i", lhs, "<C-g>u<C-w>", { desc = "Delete word before cursor" })
     vim.keymap.set("c", lhs, "<C-w>", { desc = "Delete word before cursor" })
 end
+
+-- ---------------------------------------------------------------------------
+-- Ctrl+S to save
+-- ---------------------------------------------------------------------------
+-- :update rather than :write -- it writes only when the buffer is modified, so
+-- repeatedly hitting the key does not keep bumping mtime and waking watchers.
+--
+-- <Cmd> rather than a plain ":" mapping, because <Cmd> does not change mode:
+-- Ctrl+S from Insert saves and leaves you in Insert, mid-word, cursor in place.
+--
+-- Ctrl+S is ASCII 0x13 = XOFF, which a terminal's line discipline traditionally
+-- eats to pause output -- the reason "stty -ixon" advice is everywhere. It is
+-- not needed here: Neovim puts the terminal in raw mode, which clears IXON, and
+-- xfce4-terminal does not claim the key as a shortcut of its own. Measured: the
+-- key arrives as 0x13 and input keeps flowing afterwards. (Inside :terminal the
+-- key still reaches the shell's own tty, which is left alone deliberately.)
+vim.keymap.set({ "n", "i", "v" }, "<C-s>", "<Cmd>update<CR>", { desc = "Save buffer if modified" })

@@ -88,6 +88,27 @@ Two details worth knowing:
 Plain `Backspace` is untouched, and `<C-h>` keeps its normal-mode meaning — only
 Insert and Command-line mode are remapped.
 
+## Ctrl+S to save
+
+`Ctrl+S` writes the buffer from Normal, Insert and Visual mode.
+
+It uses `:update`, not `:write` — that writes only when the buffer is actually
+modified, so leaning on the key does not keep bumping mtime and waking file
+watchers. The right-hand side is a `<Cmd>` mapping rather than a plain `:`
+one because `<Cmd>` does not change mode: saving from Insert leaves you in
+Insert, mid-word, with the cursor where it was.
+
+The usual complaint about `Ctrl+S` in a terminal is that it is ASCII `0x13`,
+i.e. XOFF, which the tty line discipline eats to pause output — hence the
+widespread `stty -ixon` advice. **That is not needed here.** Neovim puts the
+terminal into raw mode, which clears `IXON`, and xfce4-terminal does not claim
+the key as a shortcut of its own. Measured on this machine: the key arrives as
+`0x13` and input keeps flowing afterwards, so nothing freezes.
+
+One deliberate exception: inside `:terminal`, `Ctrl+S` still reaches the shell's
+own tty, where flow control may well apply. That buffer is left unmapped so the
+key keeps whatever meaning the program running there gives it.
+
 ## Notes
 
 - Keep paths in this config machine-independent: use `vim.fn.stdpath("config")`
