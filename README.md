@@ -29,11 +29,23 @@ Nothing else to do: Neovim reads `init.lua` on next launch.
 ## Layout
 
 ```
-init.lua    entry point; indentation + clipboard + keymaps, all here for now
+init.lua    entry point; numbers + indentation + clipboard + keymaps, all here for now
 ```
 
 Once `init.lua` outgrows a single file, split into `lua/raymar/` — a namespaced
 subdirectory, so module names can't collide with plugins on the runtime path.
+
+## Line numbers
+
+Absolute line numbers in the gutter (`number`), so what is on screen matches
+what compilers, linters and stack traces report.
+
+`relativenumber` — on its own, or alongside `number` for hybrid numbering, where
+the cursor line keeps its absolute number and every other line shows its distance
+— is the usual alternative. It makes counted motions (`12j`, `d5k`) readable
+without arithmetic, at the price of every other number on screen no longer being
+the line's real one. Left off here; add `vim.opt.relativenumber = true` if the
+counts turn out to earn it.
 
 ## Indentation
 

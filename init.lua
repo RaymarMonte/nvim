@@ -1,6 +1,16 @@
 -- ~/.config/nvim/init.lua
 
 -- ---------------------------------------------------------------------------
+-- Line numbers
+-- ---------------------------------------------------------------------------
+-- Absolute numbers in the gutter, so what is on screen matches what compilers,
+-- linters and stack traces report. 'relativenumber' -- alone, or alongside this
+-- one for hybrid numbering -- is the alternative: it makes counted motions like
+-- 12j readable at a glance, at the cost of the absolute number for the cursor
+-- line being the only true one on screen. Left off; add it if the counts earn it.
+vim.opt.number = true
+
+-- ---------------------------------------------------------------------------
 -- Indentation
 -- ---------------------------------------------------------------------------
 -- Four spaces, no literal tabs. These are the *global defaults*; Neovim's
