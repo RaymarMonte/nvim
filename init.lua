@@ -24,6 +24,15 @@ vim.opt.softtabstop = 4    -- Tab/BS treat 4 spaces as one unit
 vim.opt.smartindent = true
 
 -- ---------------------------------------------------------------------------
+-- Search
+-- ---------------------------------------------------------------------------
+-- Case-insensitive / and ? (also affects * and #, and :s patterns). A \C
+-- anywhere in a pattern forces case-sensitive for that one search. 'smartcase'
+-- is the usual companion: it goes case-sensitive automatically whenever the
+-- pattern contains an uppercase letter. Left off; add it if you want that.
+vim.opt.ignorecase = true
+
+-- ---------------------------------------------------------------------------
 -- Clipboard
 -- ---------------------------------------------------------------------------
 -- Share the system clipboard, so y/p need no "+ prefix.
